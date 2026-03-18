@@ -2,27 +2,87 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <title>WebApp Test</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        button {
+            background: red;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 20px;
+        }
+        .status {
+            margin: 20px;
+            padding: 10px;
+            border: 1px solid #333;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Тест отправки</h1>
-    <button onclick="sendTest()">ОТПРАВИТЬ ТЕСТ</button>
+    <h1>🧪 ТЕСТОВЫЙ WEBAPP</h1>
+    
+    <div class="status" id="status">⏳ Инициализация...</div>
+    
+    <button onclick="sendTest()">📤 ОТПРАВИТЬ ТЕСТ</button>
     
     <script>
-        function sendTest() {
+        console.log("🚀 Скрипт запущен");
+        
+        // Проверяем Telegram WebApp
+        if (!window.Telegram || !window.Telegram.WebApp) {
+            document.getElementById('status').innerText = '❌ Telegram WebApp не найден';
+            console.error("❌ Telegram WebApp не найден");
+        } else {
             const tg = window.Telegram.WebApp;
+            console.log("✅ Telegram WebApp найден");
+            
             tg.ready();
+            tg.expand();
             
-            const testData = {
-                test: "hello",
-                time: new Date().toISOString()
+            document.getElementById('status').innerText = '✅ Telegram WebApp готов';
+            
+            console.log("Версия:", tg.version);
+            console.log("Платформа:", tg.platform);
+            
+            // Функция отправки теста
+            window.sendTest = function() {
+                console.log("📤 Нажата кнопка отправки");
+                
+                const testData = {
+                    test: "hello",
+                    timestamp: new Date().toISOString(),
+                    message: "Тестовое сообщение"
+                };
+                
+                console.log("📦 Отправляемые данные:", testData);
+                
+                try {
+                    tg.sendData(JSON.stringify(testData));
+                    console.log("✅ Данные отправлены");
+                    
+                    document.getElementById('status').innerText = '✅ Данные отправлены!';
+                    
+                    tg.showAlert("✅ Тест отправлен!");
+                    
+                    setTimeout(() => tg.close(), 1500);
+                    
+                } catch (error) {
+                    console.error("❌ Ошибка отправки:", error);
+                    document.getElementById('status').innerText = '❌ Ошибка: ' + error.message;
+                }
             };
-            
-            console.log("Отправка теста...");
-            tg.sendData(JSON.stringify(testData));
-            alert("Тест отправлен!");
-            
-            setTimeout(() => tg.close(), 1000);
         }
     </script>
 </body>
